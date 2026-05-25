@@ -203,6 +203,7 @@ export interface RuntimeStatus {
   isRunning: boolean;
   port: number | null;
   host: string | null;
+  baseUrls?: string[];
   startedAt: string | null;
   pid: number | null;
 }

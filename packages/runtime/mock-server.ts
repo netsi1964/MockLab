@@ -15,7 +15,7 @@
 import { Hono } from "npm:hono@^4";
 import { cors } from "npm:hono@^4/cors";
 import type { EndpointConfig, HttpMethod, ProjectConfig } from "@mocklab/core";
-import { configService, statsTracker } from "@mocklab/core";
+import { configService, httpBaseUrls, statsTracker } from "@mocklab/core";
 import { join, toFileUrl } from "https://deno.land/std@0.224.0/path/mod.ts";
 
 // ---------------------------------------------------------------------------
@@ -169,6 +169,8 @@ function parseCrudPath(
 
 export interface MockServerInstance {
   port: number;
+  bindHost: string;
+  baseUrls: string[];
   stop: () => Promise<void>;
 }
 
@@ -176,7 +178,10 @@ export async function startMockServer(
   config: ProjectConfig,
   projectsDir: string,
 ): Promise<MockServerInstance> {
-  const { port, host } = config.project;
+  const { port } = config.project;
+  const bindHost = Deno.env.get("MOCKLAB_MOCK_BIND_HOST") ??
+    Deno.env.get("MOCKLAB_BIND_HOST") ??
+    "0.0.0.0";
   const projectName = config.project.name;
 
   const app = new Hono();
@@ -457,12 +462,19 @@ export async function startMockServer(
   const controller = new AbortController();
 
   const server = Deno.serve(
-    { port, hostname: host, signal: controller.signal, onListen: () => {} },
+    {
+      port,
+      hostname: bindHost,
+      signal: controller.signal,
+      onListen: () => {},
+    },
     app.fetch,
   );
 
   return {
     port,
+    bindHost,
+    baseUrls: httpBaseUrls(port, bindHost),
     stop: async () => {
       controller.abort();
       await server.finished;

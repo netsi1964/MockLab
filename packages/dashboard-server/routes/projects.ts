@@ -280,9 +280,16 @@ export function projectRoutes(
     }
     try {
       await runtimeManager.start(config);
-      return c.json<ApiResponse<{ port: number }>>({
+      const status = runtimeManager.getStatus(name);
+      return c.json<
+        ApiResponse<{ port: number; host: string | null; baseUrls: string[] }>
+      >({
         success: true,
-        data: { port: config.project.port },
+        data: {
+          port: config.project.port,
+          host: status.host,
+          baseUrls: status.baseUrls ?? [],
+        },
       });
     } catch (err: any) {
       return c.json<ApiResponse<never>>(

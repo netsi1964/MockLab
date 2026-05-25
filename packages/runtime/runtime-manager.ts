@@ -5,8 +5,13 @@
  * Uses the built-in Hono mock server — no Prism or Node.js required.
  */
 
-import type { EndpointConfig, ProjectConfig, RuntimeStatus } from "@mocklab/core";
-import { startMockServer, type MockServerInstance } from "./mock-server.ts";
+import type {
+  EndpointConfig,
+  ProjectConfig,
+  RuntimeStatus,
+} from "@mocklab/core";
+import { printUrlList } from "@mocklab/core";
+import { type MockServerInstance, startMockServer } from "./mock-server.ts";
 
 interface RunningProject {
   instance: MockServerInstance;
@@ -35,10 +40,12 @@ export class RuntimeManager {
 
     // Check if the port is already in use by another MockLab project
     const conflict = [...this.running.values()].find(
-      (p) => p.instance.port === port && p.projectName !== name
+      (p) => p.instance.port === port && p.projectName !== name,
     );
     if (conflict) {
-      const err = new Error(`Port ${port} is already in use by project "${conflict.projectName}"`);
+      const err = new Error(
+        `Port ${port} is already in use by project "${conflict.projectName}"`,
+      );
       (err as any).code = "PORT_IN_USE";
       (err as any).projectUsingPort = conflict.projectName;
       throw err;
@@ -54,10 +61,23 @@ export class RuntimeManager {
         projectName: name,
       });
 
-      console.log(`[runtime] "${name}" running on :${instance.port}`);
+      console.log(
+        `[runtime] "${name}" running on :${instance.port} (bind: ${instance.bindHost})`,
+      );
+      printUrlList("[runtime] Base URLs", instance.baseUrls);
+      if (config.endpoints.length > 0) {
+        console.log(`   [runtime] Endpoints exposed by "${name}":`);
+        for (const ep of config.endpoints) {
+          for (const baseUrl of instance.baseUrls) {
+            console.log(`      ${ep.method} ${baseUrl}${ep.path}`);
+          }
+        }
+      }
     } catch (err) {
       if (err instanceof Deno.errors.AddrInUse) {
-        const extErr = new Error(`Port ${port} is already in use by an external process`);
+        const extErr = new Error(
+          `Port ${port} is already in use by an external process`,
+        );
         (extErr as any).code = "PORT_IN_USE_EXTERNAL";
         throw extErr;
       }
@@ -96,12 +116,20 @@ export class RuntimeManager {
   getStatus(projectName: string): RuntimeStatus {
     const entry = this.running.get(projectName);
     if (!entry) {
-      return { isRunning: false, port: null, host: null, startedAt: null, pid: null };
+      return {
+        isRunning: false,
+        port: null,
+        host: null,
+        baseUrls: [],
+        startedAt: null,
+        pid: null,
+      };
     }
     return {
       isRunning: true,
       port: entry.instance.port,
-      host: "localhost",
+      host: entry.instance.bindHost,
+      baseUrls: entry.instance.baseUrls,
       startedAt: entry.startedAt,
       pid: null,
     };
@@ -117,7 +145,10 @@ export class RuntimeManager {
   /**
    * No-op for built-in server — config is re-read on every request.
    */
-  async updateEndpoint(_projectName: string, _endpoint: EndpointConfig): Promise<void> {
+  async updateEndpoint(
+    _projectName: string,
+    _endpoint: EndpointConfig,
+  ): Promise<void> {
     await Promise.resolve();
   }
 }

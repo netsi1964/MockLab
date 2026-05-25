@@ -1,6 +1,7 @@
-import { join } from "https://deno.land/std@0.224.0/path/mod.ts";
-
 async function main() {
+  const dashboardPort = Deno.env.get("MOCKLAB_PORT") ?? "8080";
+  const dashboardApi = `http://localhost:${dashboardPort}/api`;
+
   console.log("🧪 Starting MockLab Dashboard Server...");
 
   // Start the dashboard server as a subprocess
@@ -14,7 +15,7 @@ async function main() {
   let ready = false;
   for (let i = 0; i < 20; i++) {
     try {
-      const res = await fetch("http://localhost:8080/api/health");
+      const res = await fetch(`${dashboardApi}/health`);
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
@@ -29,7 +30,7 @@ async function main() {
   }
 
   if (!ready) {
-    console.error("❌ Dashboard server failed to start on http://localhost:8080");
+    console.error(`❌ Dashboard server failed to start on ${dashboardApi}`);
     process.kill("SIGINT");
     Deno.exit(1);
   }
@@ -38,28 +39,51 @@ async function main() {
 
   // Query all projects
   try {
-    const res = await fetch("http://localhost:8080/api/projects");
+    const res = await fetch(`${dashboardApi}/projects`);
     const json = await res.json();
     if (json.success && Array.isArray(json.data)) {
       const projects = json.data;
       if (projects.length === 0) {
-        console.log("ℹ No projects found to start. Create one using 'mocklab create <name>'.");
+        console.log(
+          "ℹ No projects found to start. Create one using 'mocklab create <name>'.",
+        );
       } else {
-        console.log(`🚀 Starting mock servers for ${projects.length} project(s)...`);
+        console.log(
+          `🚀 Starting mock servers for ${projects.length} project(s)...`,
+        );
         for (const p of projects) {
           console.log(`   - Starting project "${p.name}"...`);
           try {
-            const startRes = await fetch(`http://localhost:8080/api/projects/${p.name}/start`, {
-              method: "POST"
-            });
+            const startRes = await fetch(
+              `${dashboardApi}/projects/${p.name}/start`,
+              {
+                method: "POST",
+              },
+            );
             const startJson = await startRes.json();
             if (startJson.success) {
-              console.log(`   ✅ "${p.name}" is now running on port :${startJson.data.port}`);
+              console.log(
+                `   ✅ "${p.name}" is now running on port :${startJson.data.port}`,
+              );
+              if (
+                Array.isArray(startJson.data.baseUrls) &&
+                startJson.data.baseUrls.length > 0
+              ) {
+                console.log(`      URLs:`);
+                for (const url of startJson.data.baseUrls) {
+                  console.log(`         ${url}`);
+                }
+              }
             } else {
-              console.error(`   ❌ Failed to start "${p.name}": ${startJson.error}`);
+              console.error(
+                `   ❌ Failed to start "${p.name}": ${startJson.error}`,
+              );
             }
           } catch (err) {
-            console.error(`   ❌ Connection error starting "${p.name}":`, err instanceof Error ? err.message : err);
+            console.error(
+              `   ❌ Connection error starting "${p.name}":`,
+              err instanceof Error ? err.message : err,
+            );
           }
         }
       }

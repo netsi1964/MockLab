@@ -10,7 +10,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { ProjectManager } from "@mocklab/core";
+import { httpBaseUrls, printUrlList, ProjectManager } from "@mocklab/core";
 import { RuntimeManager } from "@mocklab/runtime";
 import { projectRoutes } from "./routes/projects.ts";
 import { endpointRoutes } from "./routes/endpoints.ts";
@@ -18,12 +18,38 @@ import { endpointRoutes } from "./routes/endpoints.ts";
 import { fromFileUrl } from "https://deno.land/std@0.224.0/path/mod.ts";
 
 const DASHBOARD_PORT = parseInt(Deno.env.get("MOCKLAB_PORT") ?? "8080");
+const DASHBOARD_BIND_HOST = Deno.env.get("MOCKLAB_DASHBOARD_BIND_HOST") ??
+  Deno.env.get("MOCKLAB_BIND_HOST") ??
+  "0.0.0.0";
 const PROJECTS_DIR = Deno.env.get("MOCKLAB_PROJECTS_DIR") ??
   fromFileUrl(new URL("./projects", import.meta.url));
 
 // Initialize services
 const projectManager = new ProjectManager(PROJECTS_DIR);
 const runtimeManager = new RuntimeManager(PROJECTS_DIR);
+const dashboardBaseUrls = httpBaseUrls(DASHBOARD_PORT, DASHBOARD_BIND_HOST);
+const dashboardEndpoints = [
+  "GET /api/health",
+  "GET /api/projects",
+  "POST /api/projects",
+  "GET /api/projects/:name",
+  "DELETE /api/projects/:name",
+  "POST /api/projects/:name/import",
+  "POST /api/projects/:name/start",
+  "POST /api/projects/:name/stop",
+  "POST /api/projects/:name/reset-stats",
+  "GET /api/projects/:name/export",
+  "GET /api/projects/:name/state",
+  "PUT /api/projects/:name/state",
+  "POST /api/projects/:name/state/reset",
+  "GET /api/projects/:name/endpoints",
+  "GET /api/projects/:name/endpoints/:id",
+  "PATCH /api/projects/:name/endpoints/:id",
+  "POST /api/projects/:name/endpoints/:id/reset",
+  "GET /api/projects/:name/endpoints/stats",
+  "GET /llm.md",
+  "GET /projects/:name/llm.md",
+];
 
 await projectManager.init();
 
@@ -42,6 +68,11 @@ app.get("/api/health", (c) =>
       version: "0.1.0",
       projectsDir: PROJECTS_DIR,
       runningProjects: runtimeManager.runningProjects(),
+      urls: {
+        dashboard: dashboardBaseUrls,
+        api: dashboardBaseUrls.map((url) => `${url}/api`),
+        llmGuide: dashboardBaseUrls.map((url) => `${url}/llm.md`),
+      },
     },
   }));
 
@@ -63,7 +94,12 @@ app.get("/projects/:name/llm.md", async (c) => {
   const config = await projectManager.get(name);
   if (!config) return c.text(`Project "${name}" not found`, 404);
 
-  const baseUrl = `http://${config.project.host}:${config.project.port}`;
+  const mockBindHost = Deno.env.get("MOCKLAB_MOCK_BIND_HOST") ??
+    Deno.env.get("MOCKLAB_BIND_HOST") ??
+    "0.0.0.0";
+  const baseUrls = httpBaseUrls(config.project.port, mockBindHost);
+  const baseUrl = baseUrls[0] ??
+    `http://${config.project.host}:${config.project.port}`;
   const endpointLines = config.endpoints
     .map((ep) => {
       const auth = ep.authMode === "none" ? "public" : `${ep.authMode} auth`;
@@ -83,6 +119,7 @@ Purpose: give an LLM enough project-specific context to call and reason about th
 
 - Name: ${config.project.name}
 - Base URL: ${baseUrl}
+- All Base URLs: ${baseUrls.join(", ")}
 - Host: ${config.project.host}
 - Port: ${config.project.port}
 - Running in MockLab: ${
@@ -191,8 +228,20 @@ Deno.addSignalListener("SIGINT", shutdown);
 Deno.addSignalListener("SIGTERM", shutdown);
 
 console.log(`\n🧪 MockLab Dashboard Server`);
-console.log(`   API: http://localhost:${DASHBOARD_PORT}/api`);
-console.log(`   UI:  http://localhost:${DASHBOARD_PORT}/`);
+console.log(`   Bind host: ${DASHBOARD_BIND_HOST}`);
+printUrlList("Dashboard URLs", dashboardBaseUrls);
+printUrlList("API URLs", dashboardBaseUrls.map((url) => `${url}/api`));
+printUrlList("LLM guide URLs", dashboardBaseUrls.map((url) => `${url}/llm.md`));
+console.log(`   Dashboard endpoints:`);
+for (const baseUrl of dashboardBaseUrls) {
+  for (const endpoint of dashboardEndpoints) {
+    const [method, path] = endpoint.split(" ");
+    console.log(`      ${method} ${baseUrl}${path}`);
+  }
+}
 console.log(`   Projects dir: ${PROJECTS_DIR}\n`);
 
-Deno.serve({ port: DASHBOARD_PORT }, app.fetch);
+Deno.serve(
+  { port: DASHBOARD_PORT, hostname: DASHBOARD_BIND_HOST },
+  app.fetch,
+);

@@ -7,6 +7,7 @@ Purpose: give an AI coding agent a compact, high-signal map of this repository.
 MockLab is a local API mock platform for OpenAPI-driven workflows.
 
 It can:
+
 - import OpenAPI specs into editable mock projects
 - generate endpoint configuration and faker handlers
 - run mock HTTP servers per project
@@ -42,7 +43,8 @@ It can:
 
 ## Runtime Data Model
 
-Generated project data lives under a projects directory. In local development the default is:
+Generated project data lives under a projects directory. In local development
+the default is:
 
 ```text
 packages/dashboard-server/projects/<project-name>/
@@ -54,12 +56,15 @@ packages/dashboard-server/projects/<project-name>/
 ```
 
 Important separation:
+
 - `endpoints.json` is configuration plus aggregate counters.
 - `state.json` is runtime mock database state.
 - `traffic.har` is detailed request/response traffic using HAR 1.2.
-- UI `recentRequests` are hydrated from `traffic.har` by server routes; they should not be serialized into `endpoints.json`.
+- UI `recentRequests` are hydrated from `traffic.har` by server routes; they
+  should not be serialized into `endpoints.json`.
 
 Do not commit runtime project data. `.gitignore` excludes:
+
 - `/packages/dashboard-server/projects/`
 - `/projects/`
 - `**/traffic.har`
@@ -71,25 +76,37 @@ Do not commit runtime project data. `.gitignore` excludes:
 ### `packages/core`
 
 Key files:
-- `types.ts`: shared TypeScript interfaces for projects, endpoints, request logs, HAR structures and OpenAPI parsing.
-- `config-service.ts`: atomic `endpoints.json` read/write with in-memory per-project locking. Strips `recentRequests` before writing.
-- `traffic-log.ts`: writes and reads `traffic.har`; converts between MockLab request logs and HAR 1.2 entries.
-- `stats-tracker.ts`: updates aggregate endpoint stats and records detailed traffic through `traffic-log.ts`.
+
+- `types.ts`: shared TypeScript interfaces for projects, endpoints, request
+  logs, HAR structures and OpenAPI parsing.
+- `config-service.ts`: atomic `endpoints.json` read/write with in-memory
+  per-project locking. Strips `recentRequests` before writing.
+- `traffic-log.ts`: writes and reads `traffic.har`; converts between MockLab
+  request logs and HAR 1.2 entries.
+- `stats-tracker.ts`: updates aggregate endpoint stats and records detailed
+  traffic through `traffic-log.ts`.
 - `openapi-parser.ts`: parses OpenAPI specs.
 - `schema-infer.ts`: creates example-ish data from schemas.
 - `faker-generator.ts`: generates editable `faker.ts` handlers.
-- `import-service.ts`: import pipeline from OpenAPI to `endpoints.json`, `faker.ts` and spec copy.
-- `project-manager.ts`: project create/list/delete/export, reset stats, and state helpers.
+- `import-service.ts`: import pipeline from OpenAPI to `endpoints.json`,
+  `faker.ts` and spec copy.
+- `project-manager.ts`: project create/list/delete/export, reset stats, and
+  state helpers.
 
-When changing persistence behavior, check `config-service.ts`, `traffic-log.ts`, `stats-tracker.ts`, and `project-manager.ts` together.
+When changing persistence behavior, check `config-service.ts`, `traffic-log.ts`,
+`stats-tracker.ts`, and `project-manager.ts` together.
 
 ### `packages/runtime`
 
 Key files:
-- `mock-server.ts`: Hono mock server factory. Matches endpoint routes, applies auth/failure/delay, reads/writes state, returns responses and records stats/traffic.
+
+- `mock-server.ts`: Hono mock server factory. Matches endpoint routes, applies
+  auth/failure/delay, reads/writes state, returns responses and records
+  stats/traffic.
 - `runtime-manager.ts`: starts/stops one mock server per project.
 
 Request flow:
+
 1. Match method + OpenAPI-style path.
 2. Re-read endpoint config for live updates.
 3. Apply endpoint disabled/auth/failure/timeout/malformed behavior.
@@ -101,29 +118,41 @@ Request flow:
 ### `packages/dashboard-server`
 
 Key files:
-- `main.ts`: Hono API server, static UI serving, `/llm.md` serving, route mounting.
-- `routes/projects.ts`: project CRUD/import/export/start/stop/reset/state APIs. Attaches HAR traffic to API project payloads.
-- `routes/endpoints.ts`: endpoint list/get/update/reset/stats APIs. Hydrates `recentRequests` from HAR.
+
+- `main.ts`: Hono API server, static UI serving, `/llm.md` serving, route
+  mounting.
+- `routes/projects.ts`: project CRUD/import/export/start/stop/reset/state APIs.
+  Attaches HAR traffic to API project payloads.
+- `routes/endpoints.ts`: endpoint list/get/update/reset/stats APIs. Hydrates
+  `recentRequests` from HAR.
 
 ### `packages/dashboard-ui`
 
 React/Vite frontend.
 
 Key files:
+
 - `src/api.ts`: typed fetch wrapper.
-- `src/components/Layout.tsx`: top navigation, theme toggle, GitHub and LLM guide links.
+- `src/components/Layout.tsx`: top navigation, theme toggle, GitHub and LLM
+  guide links.
 - `src/pages/ProjectsPage.tsx`: project list/import/start/delete flows.
-- `src/pages/ProjectDetailPage.tsx`: endpoint list, config editor, request inspector, `.http`/curl helpers, state editor.
+- `src/pages/ProjectDetailPage.tsx`: endpoint list, config editor, request
+  inspector, `.http`/curl helpers, state editor.
 
 Request inspector behavior:
+
 - shows recent request rows from API `recentRequests`
-- expands to request `.http` preview, request headers/body, response headers/body
-- supports `Get .http`, `Copy .http`, `Get curl`, `Copy curl`, `Copy request`, `Copy response`
-- filters replay-unsafe headers such as `accept-encoding`, `host`, `connection`, `content-length`, and `postman-token`
+- expands to request `.http` preview, request headers/body, response
+  headers/body
+- supports `Get .http`, `Copy .http`, `Get curl`, `Copy curl`, `Copy request`,
+  `Copy response`
+- filters replay-unsafe headers such as `accept-encoding`, `host`, `connection`,
+  `content-length`, and `postman-token`
 
 ## Public APIs
 
 Dashboard server API:
+
 - `GET /api/health`
 - `GET /api/projects`
 - `POST /api/projects`
@@ -151,6 +180,9 @@ Dashboard server API:
 # Run dashboard server
 deno task dev
 
+# Run dashboard + all projects and print local/LAN URLs for exposed endpoints
+deno task mocklab
+
 # Build frontend
 deno task build:ui
 
@@ -166,6 +198,16 @@ cd packages/dashboard-ui
 npm run lint
 npm run build
 ```
+
+Network behavior:
+
+- Dashboard and mock servers bind to `0.0.0.0` by default.
+- `MOCKLAB_BIND_HOST=localhost` restricts both dashboard and mock APIs to the
+  local machine.
+- `MOCKLAB_DASHBOARD_BIND_HOST` and `MOCKLAB_MOCK_BIND_HOST` override bind hosts
+  separately.
+- `MOCKLAB_PUBLIC_HOST` or comma-separated `MOCKLAB_PUBLIC_HOSTS` controls which
+  hostnames are printed in logs and returned by `/api/health`.
 
 Useful verification before commits:
 
@@ -185,22 +227,28 @@ deno test --allow-all packages/
 - Keep detailed HTTP request/response history in `traffic.har`.
 - Keep stateful mock data in `state.json`.
 - Do not add new databases unless the task explicitly requires it.
-- Frontend is utilitarian dashboard UI; avoid marketing-page patterns inside the app.
+- Frontend is utilitarian dashboard UI; avoid marketing-page patterns inside the
+  app.
 - Use lucide-react icons when adding dashboard buttons.
 - Use existing API client patterns in `src/api.ts`.
 - Use existing inline style/class conventions unless doing a broader UI cleanup.
 
 ## High-Risk Areas
 
-- `config-service.ts`: must avoid race conditions and must not write `recentRequests` to config.
-- `traffic-log.ts`: HAR conversion must preserve method, URL/path/query, headers, request body, response body, status and timings.
-- `mock-server.ts`: request body can only be read once unless using cloned raw request.
-- `ProjectDetailPage.tsx`: button density and long paths/headers can overflow if layout changes are careless.
+- `config-service.ts`: must avoid race conditions and must not write
+  `recentRequests` to config.
+- `traffic-log.ts`: HAR conversion must preserve method, URL/path/query,
+  headers, request body, response body, status and timings.
+- `mock-server.ts`: request body can only be read once unless using cloned raw
+  request.
+- `ProjectDetailPage.tsx`: button density and long paths/headers can overflow if
+  layout changes are careless.
 - Runtime project folders contain local data and should remain ignored.
 
 ## If You Need To Add A Feature
 
-1. Identify whether it is config, state, traffic, runtime behavior, dashboard API, frontend UI, CLI, or MCP.
+1. Identify whether it is config, state, traffic, runtime behavior, dashboard
+   API, frontend UI, CLI, or MCP.
 2. Keep persistence in the correct file:
    - config or stats: `endpoints.json`
    - mock data: `state.json`
