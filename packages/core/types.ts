@@ -45,6 +45,60 @@ export interface RequestLogEntry {
   responseBody?: string | null;
 }
 
+export interface HarFile {
+  log: {
+    version: "1.2";
+    creator: {
+      name: string;
+      version: string;
+    };
+    entries: HarEntry[];
+  };
+}
+
+export interface HarEntry {
+  startedDateTime: string;
+  time: number;
+  request: {
+    method: HttpMethod;
+    url: string;
+    httpVersion: string;
+    headers: { name: string; value: string }[];
+    queryString: { name: string; value: string }[];
+    postData?: {
+      mimeType: string;
+      text: string;
+    };
+    headersSize: number;
+    bodySize: number;
+  };
+  response: {
+    status: number;
+    statusText: string;
+    httpVersion: string;
+    headers: { name: string; value: string }[];
+    content: {
+      size: number;
+      mimeType: string;
+      text?: string;
+    };
+    redirectURL: string;
+    headersSize: number;
+    bodySize: number;
+  };
+  cache: Record<string, never>;
+  timings: {
+    send: number;
+    wait: number;
+    receive: number;
+  };
+  _mocklab: {
+    id: string;
+    endpointId: string;
+    path: string;
+  };
+}
+
 export interface EndpointConfig {
   /** Unique ID, generated from method + path */
   id: string;
@@ -68,7 +122,8 @@ export interface EndpointConfig {
   /** Summary from OpenAPI operationId or description */
   summary: string;
   stats: EndpointStats;
-  recentRequests: RequestLogEntry[];
+  /** Runtime traffic is loaded from traffic.har and exposed by API responses. */
+  recentRequests?: RequestLogEntry[];
 }
 
 // ---------------------------------------------------------------------------

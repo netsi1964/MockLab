@@ -1,23 +1,18 @@
 /**
  * MockLab Stats Tracker
  *
- * Manages request statistics and recent request logs for endpoints.
- * Updates are persisted back to endpoints.json via the config service.
+ * Manages request statistics for endpoints.
+ * Detailed traffic is stored separately in traffic.har.
  */
 
-import type {
-  EndpointStats,
-  ProjectConfig,
-  RequestLogEntry,
-} from "./types.ts";
+import type { EndpointStats, ProjectConfig, RequestLogEntry } from "./types.ts";
 import { configService } from "./config-service.ts";
-
-const MAX_RECENT_REQUESTS = 50;
+import { trafficLogService } from "./traffic-log.ts";
 
 export class StatsTracker {
   /**
    * Record a completed request for an endpoint.
-   * Updates requestCount, avgResponseTimeMs, lastCalled, and recentRequests.
+   * Updates requestCount, avgResponseTimeMs, lastCalled, and traffic.har.
    */
   async record(
     projectsDir: string,
@@ -39,10 +34,7 @@ export class StatsTracker {
         newCount,
     );
 
-    const logEntry: RequestLogEntry = {
-      id: crypto.randomUUID(),
-      ...entry,
-    };
+    await trafficLogService.record(projectsDir, projectName, endpointId, entry);
 
     config.endpoints[idx] = {
       ...ep,
@@ -50,14 +42,10 @@ export class StatsTracker {
         requestCount: newCount,
         lastCalled: entry.timestamp,
         avgResponseTimeMs: newAvg,
-        errorCount:
-          stats.errorCount +
+        errorCount: stats.errorCount +
           (entry.statusCode >= 500 || entry.statusCode === 0 ? 1 : 0),
       },
-      recentRequests: [
-        logEntry,
-        ...(ep.recentRequests ?? []),
-      ].slice(0, MAX_RECENT_REQUESTS),
+      recentRequests: undefined,
     };
 
     config.project.updatedAt = new Date().toISOString();

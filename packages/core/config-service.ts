@@ -56,7 +56,7 @@ export class ConfigService {
     return this.withLock(projectName, async () => {
       const path = ConfigService.configPath(projectsDir, projectName);
       const tmpPath = `${path}.tmp`;
-      const json = JSON.stringify(config, null, 2);
+      const json = JSON.stringify(this.serializableConfig(config), null, 2);
       // Write to temp file then rename atomically
       await Deno.writeTextFile(tmpPath, json);
       await Deno.rename(tmpPath, path);
@@ -90,10 +90,24 @@ export class ConfigService {
       config.project.updatedAt = new Date().toISOString();
       const path = ConfigService.configPath(projectsDir, projectName);
       const tmpPath = `${path}.tmp`;
-      await Deno.writeTextFile(tmpPath, JSON.stringify(config, null, 2));
+      await Deno.writeTextFile(
+        tmpPath,
+        JSON.stringify(this.serializableConfig(config), null, 2),
+      );
       await Deno.rename(tmpPath, path);
       return config;
     }) as Promise<ProjectConfig>;
+  }
+
+  private serializableConfig(config: ProjectConfig): ProjectConfig {
+    return {
+      ...config,
+      endpoints: config.endpoints.map((endpoint) => {
+        const { recentRequests: _recentRequests, ...serializableEndpoint } =
+          endpoint;
+        return serializableEndpoint;
+      }),
+    };
   }
 
   /**

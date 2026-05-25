@@ -7,6 +7,7 @@
 
 import type { ProjectConfig, ProjectMeta } from "./types.ts";
 import { configService } from "./config-service.ts";
+import { trafficLogService } from "./traffic-log.ts";
 
 export const DEFAULT_START_PORT = 4010;
 
@@ -127,10 +128,10 @@ export class ProjectManager {
         avgResponseTimeMs: 0,
         errorCount: 0,
       },
-      recentRequests: [],
     }));
     config.project.updatedAt = new Date().toISOString();
     await configService.write(this.projectsDir, name, config);
+    await trafficLogService.resetProject(this.projectsDir, name);
     return config;
   }
 
@@ -140,7 +141,18 @@ export class ProjectManager {
   async export(name: string): Promise<string> {
     const config = await configService.read(this.projectsDir, name);
     if (!config) throw new Error(`Project "${name}" not found`);
-    return JSON.stringify(config, null, 2);
+    return JSON.stringify(
+      {
+        ...config,
+        endpoints: config.endpoints.map((endpoint) => {
+          const { recentRequests: _recentRequests, ...serializableEndpoint } =
+            endpoint;
+          return serializableEndpoint;
+        }),
+      },
+      null,
+      2,
+    );
   }
 
   /**

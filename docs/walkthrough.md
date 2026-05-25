@@ -129,7 +129,7 @@ Fordele vs. Prism:
 - **Ingen subprocess**: ingen zombie-processer eller port-konflikter
 
 ### Mutex-baseret fil-locking
-`config-service.ts` bruger en in-memory per-project mutex der serialiserer concurrent writes til `endpoints.json`. Brug af atomisk temp-file + rename for at undgå korruption.
+`config-service.ts` bruger en in-memory per-project mutex der serialiserer concurrent writes til `endpoints.json`. Brug af atomisk temp-file + rename for at undgå korruption. `endpoints.json` indeholder endpoint-opsætning og aggregate stats, mens detaljeret request/response historik ligger separat i `traffic.har`.
 
 ### Faker adapter-mønster
 `faker.ts` genereres én gang ved import og indeholder TypeScript-funktioner der kan redigeres frit. Handlers registreres i et `handlers` map som runtime-laget bruger til dispatch.
@@ -144,7 +144,9 @@ Fordele vs. Prism:
 ### Real-time Request Logger & Inspector
 Hvert endpoint understøtter nu detaljeret visning af ankomne API-kald:
 - **Realtids-opdatering**: Dashboard UI poller projekt-data hvert 2. sekund, så du ser nye anmodninger, gennemsnitlig svartid og tællere med det samme uden genindlæsning.
-- **Udvidbare logs (Request Inspector)**: Klik på en anmodning i "Requests"-fanen for at udvide og inspicere rå anmodnings-headers og request-body (payload) direkte i UI.
+- **HAR-baseret traffic log**: Hver request/response gemmes i projektets `traffic.har` (HAR 1.2). Det holder runtime-observationer ude af `endpoints.json`, så endpoint-filen forbliver konfiguration.
+- **Udvidbare logs (Request Inspector)**: Klik på en anmodning i "Requests"-fanen for at udvide og inspicere rå request headers/body og response headers/body direkte i UI.
+- **Replay helpers**: Inspector kan hente/kopiere `.http` og curl for den viste request samt kopiere den viste request eller response.
 
 ---
 

@@ -106,12 +106,17 @@ After a successful import, your project folder will contain:
 ```
 /projects/my-api/
   openapi.yaml          # copy of your original spec
-  endpoints.json        # runtime configuration for every endpoint
+  endpoints.json        # endpoint configuration and aggregate stats
   faker.ts              # auto-generated faker handlers (safe to edit)
+  state.json            # local mock database, created at runtime
+  traffic.har           # local request/response history, created at runtime
   overrides/            # per-endpoint static response overrides
 ```
 
 You can freely edit `faker.ts` to customize the generated mock data.
+
+`state.json` and `traffic.har` are runtime artifacts and should not be committed.
+The root `.gitignore` excludes local project runtime data by default.
 
 ## Exporting to Postman
 
@@ -236,7 +241,10 @@ Click an endpoint to open the **configuration panel** on the right side:
 | Failure rate | Probability of failure when mode is "random" (0–100%) |
 | Override response | Return a hardcoded JSON payload instead of the generated one |
 
-**Requests tab:** Shows the last 50 requests made to the endpoint — method, path, status, response time and timestamp.
+**Requests tab:** Shows the last 50 requests made to the endpoint — method,
+path, status, response time, request headers/body and response headers/body.
+Detailed traffic is stored in each project's `traffic.har` file using the
+standard HAR 1.2 structure; endpoint configuration stays in `endpoints.json`.
 
 All changes apply immediately without restarting the mock server.
 

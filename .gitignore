@@ -1,6 +1,8 @@
-# Runtime project data: contains endpoints.json request/response logs and state.json
+# Runtime project data: contains local endpoint configs, state.json and traffic.har
 /projects/
 /packages/dashboard-server/projects/
+**/traffic.har
+**/state.json
 
 # Dependencies
 node_modules/

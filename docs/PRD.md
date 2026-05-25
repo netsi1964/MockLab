@@ -233,6 +233,12 @@ Per endpoint:
 * enable/disable
 * static override payload
 * faker-generated payload
+* aggregate request stats in `endpoints.json`
+* detailed request/response traffic in project-local `traffic.har` files
+
+`traffic.har` is a runtime artifact and must not be committed. It uses HAR 1.2
+so request/response history can be inspected or exported using standard tooling,
+while endpoint configuration remains cleanly separated in `endpoints.json`.
 * auth simulation
 * random failure injection
 * malformed payload mode

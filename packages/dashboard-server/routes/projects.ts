@@ -9,7 +9,11 @@ import type {
   ProjectMeta,
   RequestLogEntry,
 } from "@mocklab/core";
-import { importService, ProjectManager } from "@mocklab/core";
+import {
+  importService,
+  ProjectManager,
+  trafficLogService,
+} from "@mocklab/core";
 import { RuntimeManager } from "@mocklab/runtime";
 
 async function readProjectState(
@@ -80,19 +84,36 @@ function responseFromState(
   return endpointState?.[`${req.method} ${pathname}`];
 }
 
-async function backfillMissingLoggedResponses(
+async function attachTrafficAndBackfillResponses(
   projectsDir: string,
   config: ProjectConfig,
 ): Promise<ProjectConfig> {
-  const hasMissingResponses = config.endpoints.some((ep) =>
-    ep.recentRequests?.some((req) => req.responseBody === undefined)
+  const endpointsWithTraffic = await Promise.all(
+    config.endpoints.map(async (ep) => {
+      const harRequests = await trafficLogService.recentForEndpoint(
+        projectsDir,
+        config.project.name,
+        ep.id,
+      );
+      return {
+        ...ep,
+        recentRequests: harRequests.length > 0
+          ? harRequests
+          : ep.recentRequests ?? [],
+      };
+    }),
   );
-  if (!hasMissingResponses) return config;
 
-  const state = await readProjectState(projectsDir, config.project.name);
+  const hasMissingResponses = endpointsWithTraffic.some((ep) =>
+    ep.recentRequests.some((req) => req.responseBody === undefined)
+  );
+  const state = hasMissingResponses
+    ? await readProjectState(projectsDir, config.project.name)
+    : {};
+
   return {
     ...config,
-    endpoints: config.endpoints.map((ep) => ({
+    endpoints: endpointsWithTraffic.map((ep) => ({
       ...ep,
       recentRequests: ep.recentRequests.map((req) => {
         if (req.responseBody !== undefined) return req;
@@ -175,7 +196,7 @@ export function projectRoutes(
     }
     const projectsDir =
       (manager as unknown as { projectsDir: string }).projectsDir;
-    const enrichedConfig = await backfillMissingLoggedResponses(
+    const enrichedConfig = await attachTrafficAndBackfillResponses(
       projectsDir,
       config,
     );

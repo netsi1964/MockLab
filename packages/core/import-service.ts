@@ -63,7 +63,6 @@ export class ImportService {
           avgResponseTimeMs: 0,
           errorCount: 0,
         },
-        recentRequests: existingEp?.recentRequests ?? [],
       };
     });
 

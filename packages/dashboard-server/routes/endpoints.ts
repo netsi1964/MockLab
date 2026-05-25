@@ -4,8 +4,23 @@
 
 import { Hono } from "hono";
 import type { ApiResponse, EndpointConfig, ProjectConfig } from "@mocklab/core";
-import { configService } from "@mocklab/core";
+import { configService, trafficLogService } from "@mocklab/core";
 import { RuntimeManager } from "@mocklab/runtime";
+
+async function withTraffic(
+  projectsDir: string,
+  projectName: string,
+  ep: EndpointConfig,
+): Promise<EndpointConfig> {
+  return {
+    ...ep,
+    recentRequests: await trafficLogService.recentForEndpoint(
+      projectsDir,
+      projectName,
+      ep.id,
+    ),
+  };
+}
 
 export function endpointRoutes(
   projectsDir: string,
@@ -15,7 +30,7 @@ export function endpointRoutes(
 
   // GET /api/projects/:name/endpoints
   app.get("/", async (c) => {
-    const name = c.req.param("name");
+    const name = c.req.param("name")!;
     const config = await configService.read(projectsDir, name);
     if (!config) {
       return c.json<ApiResponse<never>>(
@@ -23,15 +38,19 @@ export function endpointRoutes(
         404,
       );
     }
+    const endpoints = await Promise.all(
+      config.endpoints.map((ep) => withTraffic(projectsDir, name, ep)),
+    );
     return c.json<ApiResponse<EndpointConfig[]>>({
       success: true,
-      data: config.endpoints,
+      data: endpoints,
     });
   });
 
   // GET /api/projects/:name/endpoints/:id
   app.get("/:id", async (c) => {
-    const { name, id } = c.req.param();
+    const name = c.req.param("name")!;
+    const id = c.req.param("id");
     const config = await configService.read(projectsDir, name);
     const ep = config?.endpoints.find((e) => e.id === decodeURIComponent(id));
     if (!ep) {
@@ -40,12 +59,16 @@ export function endpointRoutes(
         404,
       );
     }
-    return c.json<ApiResponse<EndpointConfig>>({ success: true, data: ep });
+    return c.json<ApiResponse<EndpointConfig>>({
+      success: true,
+      data: await withTraffic(projectsDir, name, ep),
+    });
   });
 
   // PATCH /api/projects/:name/endpoints/:id
   app.patch("/:id", async (c) => {
-    const { name, id } = c.req.param();
+    const name = c.req.param("name")!;
+    const id = c.req.param("id");
     const updates = await c.req.json<Partial<EndpointConfig>>();
     try {
       const config = await configService.updateEndpoint(
@@ -70,7 +93,8 @@ export function endpointRoutes(
 
   // POST /api/projects/:name/endpoints/:id/reset
   app.post("/:id/reset", async (c) => {
-    const { name, id } = c.req.param();
+    const name = c.req.param("name")!;
+    const id = c.req.param("id");
     const config = await configService.read(projectsDir, name);
     if (!config) {
       return c.json<ApiResponse<never>>(
@@ -100,7 +124,6 @@ export function endpointRoutes(
         avgResponseTimeMs: 0,
         errorCount: 0,
       },
-      recentRequests: [],
     };
 
     const updated = await configService.updateEndpoint(
@@ -112,15 +135,16 @@ export function endpointRoutes(
     const resetEp = updated.endpoints.find(
       (e) => e.id === decodeURIComponent(id),
     )!;
+    await trafficLogService.resetEndpoint(projectsDir, name, resetEp.id);
     return c.json<ApiResponse<EndpointConfig>>({
       success: true,
-      data: resetEp,
+      data: await withTraffic(projectsDir, name, resetEp),
     });
   });
 
   // GET /api/projects/:name/stats
   app.get("/stats", async (c) => {
-    const name = c.req.param("name");
+    const name = c.req.param("name")!;
     const config = await configService.read(projectsDir, name);
     if (!config) {
       return c.json<ApiResponse<never>>(
