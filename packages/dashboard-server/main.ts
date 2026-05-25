@@ -43,8 +43,20 @@ app.get("/api/health", (c) =>
       projectsDir: PROJECTS_DIR,
       runningProjects: runtimeManager.runningProjects(),
     },
-  })
-);
+  }));
+
+// LLM-readable repository guide
+app.get("/llm.md", async (c) => {
+  const guidePath = new URL("../../llm.md", import.meta.url);
+  try {
+    const content = await Deno.readTextFile(guidePath);
+    return c.text(content, 200, {
+      "content-type": "text/markdown; charset=utf-8",
+    });
+  } catch {
+    return c.text("llm.md not found", 404);
+  }
+});
 
 // API routes
 app.route(
@@ -63,7 +75,10 @@ app.get("/assets/*", async (c) => {
   const pathname = new URL(c.req.url).pathname;
   const filename = pathname.replace(/^\/assets\//, "");
   const ext = filename.split(".").pop() ?? "";
-  const filePath = new URL(`../dashboard-ui/dist/assets/${filename}`, import.meta.url);
+  const filePath = new URL(
+    `../dashboard-ui/dist/assets/${filename}`,
+    import.meta.url,
+  );
   try {
     const content = await Deno.readFile(filePath);
     let contentType = "application/octet-stream";
@@ -72,7 +87,7 @@ app.get("/assets/*", async (c) => {
     else if (ext === "png") contentType = "image/png";
     else if (ext === "svg") contentType = "image/svg+xml";
     else if (ext === "ico") contentType = "image/x-icon";
-    
+
     return c.body(content, 200, { "content-type": contentType });
   } catch {
     return c.text("Not found", 404);
@@ -82,7 +97,10 @@ app.get("/assets/*", async (c) => {
 // Serve static dashboard UI files (built by Vite)
 // In development the Vite dev server runs separately on :5173
 app.get("/*", async (c) => {
-  const uiDistPath = new URL("../dashboard-ui/dist/index.html", import.meta.url);
+  const uiDistPath = new URL(
+    "../dashboard-ui/dist/index.html",
+    import.meta.url,
+  );
   try {
     const html = await Deno.readTextFile(uiDistPath);
     return c.html(html);

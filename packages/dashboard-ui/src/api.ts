@@ -107,6 +107,7 @@ export const api = {
     }),
   exportProject: (name: string) =>
     `${BASE_URL}/api/projects/${name}/export`,
+  llmGuide: () => `${BASE_URL}/llm.md`,
 
   // Endpoints
   listEndpoints: (name: string) =>

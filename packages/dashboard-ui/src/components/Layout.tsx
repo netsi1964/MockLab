@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useLocation } from 'react-router-dom';
-import { FlaskConical, Activity, Sun, Moon } from 'lucide-react';
+import { FlaskConical, Activity, Sun, Moon, Bot } from 'lucide-react';
 import { api } from '../api';
 
 interface LayoutProps {
@@ -99,7 +99,16 @@ export function Layout({ children }: LayoutProps) {
             {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
           </button>
           <a
-            href="https://github.com"
+            href={api.llmGuide()}
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-ghost btn-sm"
+            style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}
+          >
+            <Bot size={13} /> LLM Guide
+          </a>
+          <a
+            href="https://github.com/netsi1964/MockLab"
             target="_blank"
             rel="noreferrer"
             className="btn btn-ghost btn-sm"
