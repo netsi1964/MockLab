@@ -1,0 +1,11 @@
+{
+  "name": "@mocklab/mcp",
+  "version": "0.1.0",
+  "imports": {
+    "@mocklab/core": "../core/mod.ts",
+    "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@^1.0.0"
+  },
+  "tasks": {
+    "start": "deno run --allow-all main.ts"
+  }
+}

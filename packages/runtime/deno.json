@@ -1,0 +1,12 @@
+{
+  "name": "@mocklab/runtime",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./mod.ts",
+    "./mock-server": "./mock-server.ts",
+    "./manager": "./runtime-manager.ts"
+  },
+  "imports": {
+    "@mocklab/core": "../core/mod.ts"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@mocklab/core",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./mod.ts",
+    "./types": "./types.ts",
+    "./config-service": "./config-service.ts",
+    "./project-manager": "./project-manager.ts",
+    "./openapi-parser": "./openapi-parser.ts",
+    "./schema-infer": "./schema-infer.ts",
+    "./faker-generator": "./faker-generator.ts",
+    "./stats-tracker": "./stats-tracker.ts"
+  },
+  "imports": {
+    "yaml": "npm:yaml@^2.4.5"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@mocklab/cli",
+  "version": "0.1.0",
+  "imports": {
+    "@mocklab/core": "../core/mod.ts"
+  },
+  "tasks": {
+    "start": "deno run --allow-all main.ts",
+    "compile": "deno compile --allow-all --output mocklab main.ts"
+  }
+}

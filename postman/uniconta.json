@@ -1,0 +1,1533 @@
+{
+  "info": {
+    "_postman_id": "55677267-3fbd-4bab-aecf-f5693bf332ab",
+    "name": "Uniconta API",
+    "description": "Uniconta WebAPI mock — genereret af MockLab",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Log ind og få access token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "",
+                  "if (json.accessToken) {",
+                  "  pm.environment.set(\"accessToken\", json.accessToken);",
+                  "}",
+                  "",
+                  "if (json.refreshToken) {",
+                  "  pm.environment.set(\"refreshToken\", json.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": null,
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"appId\": \"{{appId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/auth/login",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Login succesfuldt",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"appId\": \"{{appId}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/auth/login",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accessToken\": \"string\",\n  \"refreshToken\": \"string\",\n  \"expiresIn\": 3600,\n  \"tokenType\": \"Bearer\"\n}"
+            },
+            {
+              "name": "Uautoriseret",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"appId\": \"{{appId}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/auth/login",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"message\": \"string\",\n  \"details\": [\n    \"string\"\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forny access token med refresh token",
+          "request": {
+            "auth": null,
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/auth/refresh",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Token fornyet",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/auth/refresh",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accessToken\": \"string\",\n  \"refreshToken\": \"string\",\n  \"expiresIn\": 3600,\n  \"tokenType\": \"Bearer\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Company",
+      "item": [
+        {
+          "name": "List alle tilgængelige virksomheder",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/companies",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "companies"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Liste af virksomheder",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/companies",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "companies"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"companyId\": 1,\n    \"name\": \"string\",\n    \"currency\": \"DKK\",\n    \"country\": \"DK\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRUD",
+      "item": [
+        {
+          "name": "Hent entiteter af en given type",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/Crud/Read/{{entityName}}",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "Crud",
+                "Read",
+                "{{entityName}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Liste af entiteter",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/Crud/Read/{{entityName}}",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "Crud",
+                    "Read",
+                    "{{entityName}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"entityName\": \"string\",\n    \"rowId\": 1,\n    \"created\": \"2026-05-25T06:53:00.367Z\",\n    \"updated\": \"2026-05-25T06:53:00.369Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Opret en ny entitet",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"{{entityName}}\",\n  \"rowId\": \"{{rowId}}\",\n  \"created\": \"2026-05-25T06:53:00.369Z\",\n  \"updated\": \"2026-05-25T06:53:00.369Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/Crud/Update/{{entityName}}",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "Crud",
+                "Update",
+                "{{entityName}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Entitet oprettet",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entityName\": \"{{entityName}}\",\n  \"rowId\": \"{{rowId}}\",\n  \"created\": \"2026-05-25T06:53:00.369Z\",\n  \"updated\": \"2026-05-25T06:53:00.369Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/Crud/Update/{{entityName}}",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "Crud",
+                    "Update",
+                    "{{entityName}}"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"entityName\": \"string\",\n  \"rowId\": 1,\n  \"created\": \"2026-05-25T06:53:00.369Z\",\n  \"updated\": \"2026-05-25T06:53:00.369Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Hent specifik entitet via rowId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/Crud/Read/{{entityName}}",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "Crud",
+                "Read",
+                "{{entityName}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Entitet",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/Crud/Read/{{entityName}}",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "Crud",
+                    "Read",
+                    "{{entityName}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"entityName\": \"string\",\n  \"rowId\": 1,\n  \"created\": \"2026-05-25T06:53:00.369Z\",\n  \"updated\": \"2026-05-25T06:53:00.369Z\"\n}"
+            },
+            {
+              "name": "Ikke fundet",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/Crud/Read/{{entityName}}",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "Crud",
+                    "Read",
+                    "{{entityName}}"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"message\": \"string\",\n  \"details\": [\n    \"string\"\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Opdater en entitet",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"{{entityName}}\",\n  \"rowId\": \"{{rowId}}\",\n  \"created\": \"2026-05-25T06:53:00.369Z\",\n  \"updated\": \"2026-05-25T06:53:00.369Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/Crud/Update/{{entityName}}",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "Crud",
+                "Update",
+                "{{entityName}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Opdateret",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entityName\": \"{{entityName}}\",\n  \"rowId\": \"{{rowId}}\",\n  \"created\": \"2026-05-25T06:53:00.369Z\",\n  \"updated\": \"2026-05-25T06:53:00.369Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/Crud/Update/{{entityName}}",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "Crud",
+                    "Update",
+                    "{{entityName}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"entityName\": \"string\",\n  \"rowId\": 1,\n  \"created\": \"2026-05-25T06:53:00.369Z\",\n  \"updated\": \"2026-05-25T06:53:00.369Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Slet en entitet",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/Crud/Delete/{{entityName}}",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "Crud",
+                "Delete",
+                "{{entityName}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Slettet",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/Crud/Delete/{{entityName}}",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "Crud",
+                    "Delete",
+                    "{{entityName}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"posted\": true,\n  \"voucher\": 2026052207,\n  \"message\": \"Bogføring gennemført.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Invoice",
+      "item": [
+        {
+          "name": "Bogfør en faktura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account\": \"10001\",\n  \"orderNumber\": 4587,\n  \"invoiceDate\": \"2026-05-22\",\n  \"currency\": \"DKK\",\n  \"payment\": \"NETTO14\",\n  \"lines\": [\n    {\n      \"item\": \"VVS-VENT-100\",\n      \"text\": \"Ventilationsrist hvid 100 mm\",\n      \"quantity\": 6,\n      \"unit\": \"stk\",\n      \"unitPrice\": 189.95,\n      \"discountPercent\": 0,\n      \"vat\": \"U25\",\n      \"amount\": 1139.7\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/invoice/post",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "invoice",
+                "post"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Faktura bogført",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account\": \"10001\",\n  \"orderNumber\": 4587,\n  \"invoiceDate\": \"2026-05-22\",\n  \"currency\": \"DKK\",\n  \"payment\": \"NETTO14\",\n  \"lines\": [\n    {\n      \"item\": \"VVS-VENT-100\",\n      \"text\": \"Ventilationsrist hvid 100 mm\",\n      \"quantity\": 6,\n      \"unit\": \"stk\",\n      \"unitPrice\": 189.95,\n      \"discountPercent\": 0,\n      \"vat\": \"U25\",\n      \"amount\": 1139.7\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/invoice/post",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "invoice",
+                    "post"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"invoiceNumber\": 102487,\n  \"account\": \"10001\",\n  \"totalExVat\": 1139.7,\n  \"vatAmount\": 284.93,\n  \"totalInclVat\": 1424.63,\n  \"currency\": \"DKK\",\n  \"posted\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Bogfør faktura og returner PDF",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account\": \"10001\",\n  \"orderNumber\": 4587,\n  \"invoiceDate\": \"2026-05-22\",\n  \"currency\": \"DKK\",\n  \"payment\": \"NETTO14\",\n  \"lines\": [\n    {\n      \"item\": \"VVS-VENT-100\",\n      \"text\": \"Ventilationsrist hvid 100 mm\",\n      \"quantity\": 6,\n      \"unit\": \"stk\",\n      \"unitPrice\": 189.95,\n      \"discountPercent\": 0,\n      \"vat\": \"U25\",\n      \"amount\": 1139.7\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/invoice/post-with-pdf",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "invoice",
+                "post-with-pdf"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Faktura med PDF",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"account\": \"10001\",\n  \"orderNumber\": 4587,\n  \"invoiceDate\": \"2026-05-22\",\n  \"currency\": \"DKK\",\n  \"payment\": \"NETTO14\",\n  \"lines\": [\n    {\n      \"item\": \"VVS-VENT-100\",\n      \"text\": \"Ventilationsrist hvid 100 mm\",\n      \"quantity\": 6,\n      \"unit\": \"stk\",\n      \"unitPrice\": 189.95,\n      \"discountPercent\": 0,\n      \"vat\": \"U25\",\n      \"amount\": 1139.7\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/invoice/post-with-pdf",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "invoice",
+                    "post-with-pdf"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"invoiceNumber\": 102487,\n  \"account\": \"10001\",\n  \"totalExVat\": 1139.7,\n  \"vatAmount\": 284.93,\n  \"totalInclVat\": 1424.63,\n  \"currency\": \"DKK\",\n  \"posted\": true,\n  \"pdfBase64\": \"string\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Journal",
+      "item": [
+        {
+          "name": "Bogfør en kladde",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"journalName\": \"DAGLIG\",\n  \"postingDate\": \"2026-05-22\",\n  \"lines\": [\n    {\n      \"account\": \"5820\",\n      \"offsetAccount\": \"5500\",\n      \"text\": \"Diesel til servicevogn\",\n      \"amount\": 1248.75,\n      \"currency\": \"DKK\",\n      \"vat\": \"I25\",\n      \"date\": \"2026-05-22\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/journal/post",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "journal",
+                "post"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Bogføring gennemført",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"journalName\": \"DAGLIG\",\n  \"postingDate\": \"2026-05-22\",\n  \"lines\": [\n    {\n      \"account\": \"5820\",\n      \"offsetAccount\": \"5500\",\n      \"text\": \"Diesel til servicevogn\",\n      \"amount\": 1248.75,\n      \"currency\": \"DKK\",\n      \"vat\": \"I25\",\n      \"date\": \"2026-05-22\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/journal/post",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "journal",
+                    "post"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"posted\": true,\n  \"voucher\": 2026052207,\n  \"message\": \"Bogføring gennemført.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MasterDetails",
+      "item": [
+        {
+          "name": "Opret master med tilhørende detaljelinjer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"master\": {\n    \"entityName\": \"{{entityName}}\",\n    \"rowId\": \"{{rowId}}\",\n    \"created\": \"2026-05-25T06:53:00.369Z\",\n    \"updated\": \"2026-05-25T06:53:00.369Z\"\n  },\n  \"details\": [\n    {\n      \"entityName\": \"{{entityName}}\",\n      \"rowId\": \"{{rowId}}\",\n      \"created\": \"2026-05-25T06:53:00.369Z\",\n      \"updated\": \"2026-05-25T06:53:00.369Z\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/master-details",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "master-details"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Oprettet",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"master\": {\n    \"entityName\": \"{{entityName}}\",\n    \"rowId\": \"{{rowId}}\",\n    \"created\": \"2026-05-25T06:53:00.369Z\",\n    \"updated\": \"2026-05-25T06:53:00.369Z\"\n  },\n  \"details\": [\n    {\n      \"entityName\": \"{{entityName}}\",\n      \"rowId\": \"{{rowId}}\",\n      \"created\": \"2026-05-25T06:53:00.369Z\",\n      \"updated\": \"2026-05-25T06:53:00.369Z\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/master-details",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "master-details"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"posted\": true,\n  \"voucher\": 2026052207,\n  \"message\": \"Bogføring gennemført.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Production",
+      "item": [
+        {
+          "name": "Afslut produktionsordre",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productionNumber\": 300184,\n  \"item\": \"METAL-BESLAG-45\",\n  \"quantity\": 120,\n  \"warehouse\": \"HOVED\",\n  \"date\": \"2026-05-22\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/production/finish",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "production",
+                "finish"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Produktion afsluttet",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productionNumber\": 300184,\n  \"item\": \"METAL-BESLAG-45\",\n  \"quantity\": 120,\n  \"warehouse\": \"HOVED\",\n  \"date\": \"2026-05-22\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/production/finish",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "production",
+                    "finish"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"posted\": true,\n  \"voucher\": 2026052207,\n  \"message\": \"Bogføring gennemført.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project",
+      "item": [
+        {
+          "name": "Bogfør projekttimer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectNumber\": \"P-2026-014\",\n  \"account\": \"10001\",\n  \"lines\": [\n    {\n      \"employee\": \"MHA\",\n      \"text\": \"Rådgivning ved energioptimering\",\n      \"hours\": 7.5,\n      \"rate\": 875,\n      \"date\": \"2026-05-21\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/project/post",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "project",
+                "post"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Projekttimer bogført",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"projectNumber\": \"P-2026-014\",\n  \"account\": \"10001\",\n  \"lines\": [\n    {\n      \"employee\": \"MHA\",\n      \"text\": \"Rådgivning ved energioptimering\",\n      \"hours\": 7.5,\n      \"rate\": 875,\n      \"date\": \"2026-05-21\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/project/post",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "project",
+                    "post"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"posted\": true,\n  \"voucher\": 2026052207,\n  \"message\": \"Bogføring gennemført.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Query",
+      "item": [
+        {
+          "name": "Forespørg entiteter med filtre og sortering",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filters\": [\n    {\n      \"field\": \"string\",\n      \"operator\": \"equals\",\n      \"value\": \"string\"\n    }\n  ],\n  \"orderBy\": \"string\",\n  \"skip\": 1,\n  \"take\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{mocklabsBaseUrl}}/Crud/Query/{{entityName}}",
+              "host": [
+                "{{mocklabsBaseUrl}}"
+              ],
+              "path": [
+                "Crud",
+                "Query",
+                "{{entityName}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [
+            {
+              "name": "Filtreret liste",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"filters\": [\n    {\n      \"field\": \"string\",\n      \"operator\": \"equals\",\n      \"value\": \"string\"\n    }\n  ],\n  \"orderBy\": \"string\",\n  \"skip\": 1,\n  \"take\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{mocklabsBaseUrl}}/Crud/Query/{{entityName}}",
+                  "host": [
+                    "{{mocklabsBaseUrl}}"
+                  ],
+                  "path": [
+                    "Crud",
+                    "Query",
+                    "{{entityName}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"entityName\": \"string\",\n    \"rowId\": 1,\n    \"created\": \"2026-05-25T06:53:00.369Z\",\n    \"updated\": \"2026-05-25T06:53:00.369Z\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,628 @@
+openapi: "3.0.3"
+info:
+  title: Uniconta API
+  version: "1.0.0"
+  description: Uniconta WebAPI mock — genereret af MockLab
+
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      summary: Log ind og få access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login succesfuldt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Uautoriseret
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      summary: Forny access token med refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: Token fornyet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+
+  /companies:
+    get:
+      operationId: listCompanies
+      summary: List alle tilgængelige virksomheder
+      responses:
+        "200":
+          description: Liste af virksomheder
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Company"
+
+  /crud/{entityName}:
+    get:
+      operationId: getEntities
+      summary: Hent entiteter af en given type
+      parameters:
+        - name: entityName
+          in: path
+          required: true
+          schema:
+            type: string
+            example: Debtor
+      responses:
+        "200":
+          description: Liste af entiteter
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UnicontaEntity"
+    post:
+      operationId: createEntity
+      summary: Opret en ny entitet
+      parameters:
+        - name: entityName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnicontaEntity"
+      responses:
+        "201":
+          description: Entitet oprettet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnicontaEntity"
+
+  /crud/{entityName}/{rowId}:
+    get:
+      operationId: getEntityById
+      summary: Hent specifik entitet via rowId
+      parameters:
+        - name: entityName
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: rowId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Entitet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnicontaEntity"
+        "404":
+          description: Ikke fundet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateEntity
+      summary: Opdater en entitet
+      parameters:
+        - name: entityName
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: rowId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnicontaEntity"
+      responses:
+        "200":
+          description: Opdateret
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnicontaEntity"
+    delete:
+      operationId: deleteEntity
+      summary: Slet en entitet
+      parameters:
+        - name: entityName
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: rowId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Slettet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResult"
+
+  /query/{entityName}:
+    post:
+      operationId: queryEntities
+      summary: Forespørg entiteter med filtre og sortering
+      parameters:
+        - name: entityName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryRequest"
+      responses:
+        "200":
+          description: Filtreret liste
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UnicontaEntity"
+
+  /journal/post:
+    post:
+      operationId: postJournal
+      summary: Bogfør en kladde
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JournalPostRequest"
+      responses:
+        "200":
+          description: Bogføring gennemført
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResult"
+
+  /invoice/post:
+    post:
+      operationId: postInvoice
+      summary: Bogfør en faktura
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvoicePostRequest"
+      responses:
+        "200":
+          description: Faktura bogført
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoicePostResponse"
+
+  /invoice/post-with-pdf:
+    post:
+      operationId: postInvoiceWithPdf
+      summary: Bogfør faktura og returner PDF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvoicePostRequest"
+      responses:
+        "200":
+          description: Faktura med PDF
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoicePdfResponse"
+
+  /production/finish:
+    post:
+      operationId: finishProduction
+      summary: Afslut produktionsordre
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductionFinishRequest"
+      responses:
+        "200":
+          description: Produktion afsluttet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResult"
+
+  /project/post:
+    post:
+      operationId: postProject
+      summary: Bogfør projekttimer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectPostRequest"
+      responses:
+        "200":
+          description: Projekttimer bogført
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResult"
+
+  /master-details:
+    post:
+      operationId: createMasterDetails
+      summary: Opret master med tilhørende detaljelinjer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MasterDetailsRequest"
+      responses:
+        "201":
+          description: Oprettet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResult"
+
+components:
+  schemas:
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+      additionalProperties: false
+
+    LoginResponse:
+      type: object
+      required: [accessToken, refreshToken, expiresIn, tokenType]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          example: 3600
+        tokenType:
+          type: string
+          example: Bearer
+
+    Company:
+      type: object
+      properties:
+        companyId:
+          type: integer
+        name:
+          type: string
+        currency:
+          type: string
+          example: DKK
+        country:
+          type: string
+          example: DK
+
+    QueryRequest:
+      type: object
+      properties:
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/QueryFilter"
+        orderBy:
+          type: string
+        skip:
+          type: integer
+          minimum: 0
+        take:
+          type: integer
+          minimum: 1
+          maximum: 1000
+
+    QueryFilter:
+      type: object
+      required: [field, operator, value]
+      properties:
+        field:
+          type: string
+        operator:
+          type: string
+          enum: [equals, notEquals, contains, startsWith, greaterThan, lessThan, greaterOrEqual, lessOrEqual]
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+
+    UnicontaEntity:
+      type: object
+      properties:
+        entityName:
+          type: string
+        rowId:
+          type: integer
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+
+    MasterDetailsRequest:
+      type: object
+      required: [master, details]
+      properties:
+        master:
+          $ref: "#/components/schemas/UnicontaEntity"
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnicontaEntity"
+
+    JournalPostRequest:
+      type: object
+      required: [journalName, lines]
+      properties:
+        journalName:
+          type: string
+          example: DAGLIG
+        postingDate:
+          type: string
+          format: date
+          example: "2026-05-22"
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/JournalLine"
+
+    JournalLine:
+      type: object
+      required: [account, text, amount]
+      properties:
+        account:
+          type: string
+          example: "5820"
+        offsetAccount:
+          type: string
+          example: "5500"
+        text:
+          type: string
+          example: Diesel til servicevogn
+        amount:
+          type: number
+          format: double
+          example: 1248.75
+        currency:
+          type: string
+          example: DKK
+        vat:
+          type: string
+          example: I25
+        date:
+          type: string
+          format: date
+          example: "2026-05-22"
+
+    InvoicePostRequest:
+      type: object
+      required: [account, invoiceDate, lines]
+      properties:
+        account:
+          type: string
+          example: "10001"
+        orderNumber:
+          type: integer
+          example: 4587
+        invoiceDate:
+          type: string
+          format: date
+          example: "2026-05-22"
+        currency:
+          type: string
+          example: DKK
+        payment:
+          type: string
+          example: NETTO14
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/InvoiceLine"
+
+    InvoiceLine:
+      type: object
+      required: [text, quantity, unitPrice]
+      properties:
+        item:
+          type: string
+          example: "VVS-VENT-100"
+        text:
+          type: string
+          example: Ventilationsrist hvid 100 mm
+        quantity:
+          type: number
+          example: 6
+        unit:
+          type: string
+          example: stk
+        unitPrice:
+          type: number
+          example: 189.95
+        discountPercent:
+          type: number
+          example: 0
+        vat:
+          type: string
+          example: U25
+        amount:
+          type: number
+          example: 1139.7
+
+    InvoicePostResponse:
+      type: object
+      properties:
+        invoiceNumber:
+          type: integer
+          example: 102487
+        account:
+          type: string
+          example: "10001"
+        totalExVat:
+          type: number
+          example: 1139.7
+        vatAmount:
+          type: number
+          example: 284.93
+        totalInclVat:
+          type: number
+          example: 1424.63
+        currency:
+          type: string
+          example: DKK
+        posted:
+          type: boolean
+          example: true
+
+    InvoicePdfResponse:
+      allOf:
+        - $ref: "#/components/schemas/InvoicePostResponse"
+        - type: object
+          properties:
+            pdfBase64:
+              type: string
+
+    ProductionFinishRequest:
+      type: object
+      required: [productionNumber, item, quantity]
+      properties:
+        productionNumber:
+          type: integer
+          example: 300184
+        item:
+          type: string
+          example: "METAL-BESLAG-45"
+        quantity:
+          type: number
+          example: 120
+        warehouse:
+          type: string
+          example: HOVED
+        date:
+          type: string
+          format: date
+          example: "2026-05-22"
+
+    ProjectPostRequest:
+      type: object
+      required: [projectNumber, lines]
+      properties:
+        projectNumber:
+          type: string
+          example: "P-2026-014"
+        account:
+          type: string
+          example: "10001"
+        lines:
+          type: array
+          items:
+            type: object
+            properties:
+              employee:
+                type: string
+                example: MHA
+              text:
+                type: string
+                example: Rådgivning ved energioptimering
+              hours:
+                type: number
+                example: 7.5
+              rate:
+                type: number
+                example: 875
+              date:
+                type: string
+                format: date
+                example: "2026-05-21"
+
+    PostResult:
+      type: object
+      properties:
+        posted:
+          type: boolean
+          example: true
+        voucher:
+          type: integer
+          example: 2026052207
+        message:
+          type: string
+          example: Bogføring gennemført.
+
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string

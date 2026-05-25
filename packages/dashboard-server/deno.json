@@ -1,0 +1,16 @@
+{
+  "name": "@mocklab/dashboard-server",
+  "version": "0.1.0",
+  "imports": {
+    "@mocklab/core": "../core/mod.ts",
+    "@mocklab/runtime": "../runtime/mod.ts",
+    "hono": "npm:hono@^4",
+    "hono/cors": "npm:hono@^4/cors",
+    "hono/logger": "npm:hono@^4/logger",
+    "hono/static": "npm:hono@^4/middleware/serve-static"
+  },
+  "tasks": {
+    "dev": "deno run --allow-all --watch main.ts",
+    "start": "deno run --allow-all main.ts"
+  }
+}

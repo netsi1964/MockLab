@@ -1,0 +1,17 @@
+{
+  "workspace": [
+    "./packages/core",
+    "./packages/runtime",
+    "./packages/dashboard-server",
+    "./packages/cli",
+    "./packages/mcp"
+  ],
+  "tasks": {
+    "dev": "deno task --cwd packages/dashboard-server dev",
+    "build:ui": "npm run build --prefix packages/dashboard-ui",
+    "test": "deno test --allow-all packages/",
+    "cli": "deno run --allow-all packages/cli/main.ts",
+    "generate-postman": "deno run --allow-all scripts/generate-postman.ts",
+    "mocklab": "deno run --allow-all scripts/start-all.ts"
+  }
+}

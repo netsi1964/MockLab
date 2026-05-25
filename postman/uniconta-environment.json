@@ -1,0 +1,72 @@
+{
+  "id": "45d8d5e4-7f6a-45eb-8705-b693901dd55b",
+  "name": "MockLab Uniconta",
+  "values": [
+    {
+      "key": "mocklabsBaseUrl",
+      "value": "http://localhost:4010",
+      "type": "default",
+      "enabled": true,
+      "description": "The URL of the running MockLab project runtime."
+    },
+    {
+      "key": "username",
+      "value": "admin",
+      "type": "default",
+      "enabled": true,
+      "description": "Test username used in the login payload."
+    },
+    {
+      "key": "password",
+      "value": "secret123",
+      "type": "default",
+      "enabled": true,
+      "description": "Test password used in the login payload."
+    },
+    {
+      "key": "companyId",
+      "value": "1",
+      "type": "default",
+      "enabled": true,
+      "description": "Default company identifier."
+    },
+    {
+      "key": "appId",
+      "value": "mock-app",
+      "type": "default",
+      "enabled": true,
+      "description": "Application ID used in mock contexts."
+    },
+    {
+      "key": "entityName",
+      "value": "Debtor",
+      "type": "default",
+      "enabled": true,
+      "description": "Default entity type for CRUD requests."
+    },
+    {
+      "key": "rowId",
+      "value": "1",
+      "type": "default",
+      "enabled": true,
+      "description": "Default ID used for entity lookups, updates, and deletes."
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "default",
+      "enabled": true,
+      "description": "Automatically populated by login test scripts."
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "default",
+      "enabled": true,
+      "description": "Automatically populated by login test scripts."
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-05-25T06:53:00.375Z",
+  "_postman_exported_using": "Postman/10.0.0"
+}
