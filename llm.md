@@ -183,6 +183,12 @@ deno task dev
 # Run dashboard + all projects and print local/LAN URLs for exposed endpoints
 deno task mocklab
 
+# Open a temporary public Cloudflare tunnel to http://localhost:4010
+deno task tunnel
+
+# Open a temporary public tunnel to another local URL
+deno task tunnel http://localhost:8080
+
 # Build frontend
 deno task build:ui
 

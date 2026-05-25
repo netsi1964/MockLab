@@ -44,6 +44,28 @@ MOCKLAB_PUBLIC_HOST=mocklab.example.test deno task mocklab
 MOCKLAB_DASHBOARD_BIND_HOST=0.0.0.0 MOCKLAB_MOCK_BIND_HOST=localhost deno task mocklab
 ```
 
+### Temporary public tunnel
+
+For quick external access, use the Cloudflare quick tunnel task. It requires
+`cloudflared` locally, but no Cloudflare account or config.
+
+```bash
+# Expose the default Uniconta/mock API on localhost:4010
+deno task tunnel
+
+# Expose the dashboard instead
+deno task tunnel http://localhost:8080
+```
+
+The task runs:
+
+```bash
+cloudflared tunnel --url http://localhost:4010
+```
+
+and prints a temporary `https://<random>.trycloudflare.com` URL. The tunnel
+stays open until you press `Ctrl+C`.
+
 ### 2. Manual Step-by-Step Startup
 
 If you prefer to start things manually:
