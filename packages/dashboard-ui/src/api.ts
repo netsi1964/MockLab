@@ -5,6 +5,12 @@
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
+function appBaseUrl(): string {
+  if (BASE_URL) return BASE_URL;
+  if (window.location.port === '5173') return 'http://localhost:8080';
+  return '';
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -108,6 +114,8 @@ export const api = {
   exportProject: (name: string) =>
     `${BASE_URL}/api/projects/${name}/export`,
   llmGuide: () => `${BASE_URL}/llm.md`,
+  projectLlmGuide: (name: string) =>
+    `${appBaseUrl()}/projects/${encodeURIComponent(name)}/llm.md`,
 
   // Endpoints
   listEndpoints: (name: string) =>

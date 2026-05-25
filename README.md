@@ -140,7 +140,7 @@ The collection includes:
 Alternatively, you can convert a specific YAML/JSON file directly by passing its path:
 
 ```bash
-deno task generate-postman openapi/uniconta.yaml
+deno task generate-postman openapi/uniconta.json
 ```
 
 ### 1. Download Postman

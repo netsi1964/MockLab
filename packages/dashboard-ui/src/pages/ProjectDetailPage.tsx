@@ -5,7 +5,7 @@ import {
   ArrowLeft, Play, Square, RefreshCw, Download,
   Search, Filter,
   BarChart2, Clock, AlertTriangle, CheckCircle,
-  Zap, ShieldOff, Shuffle, Activity, Database, Save, Sparkles, Trash2, Terminal
+  Zap, ShieldOff, Shuffle, Activity, Database, Save, Sparkles, Trash2, Terminal, Bot
 } from 'lucide-react';
 import { api, type EndpointConfig, type ProjectState, type RequestLogEntry } from '../api';
 
@@ -101,6 +101,14 @@ export function ProjectDetailPage() {
             >
               <RefreshCw size={13} />
             </button>
+            <a
+              className="btn btn-ghost btn-sm"
+              href={api.projectLlmGuide(name!)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Bot size={13} />LLM Guide
+            </a>
             <a
               className="btn btn-ghost btn-sm"
               href={api.exportProject(name!)}

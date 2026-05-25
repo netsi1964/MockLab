@@ -58,6 +58,65 @@ app.get("/llm.md", async (c) => {
   }
 });
 
+app.get("/projects/:name/llm.md", async (c) => {
+  const name = c.req.param("name");
+  const config = await projectManager.get(name);
+  if (!config) return c.text(`Project "${name}" not found`, 404);
+
+  const baseUrl = `http://${config.project.host}:${config.project.port}`;
+  const endpointLines = config.endpoints
+    .map((ep) => {
+      const auth = ep.authMode === "none" ? "public" : `${ep.authMode} auth`;
+      return `- ${ep.method} ${ep.path}
+  - URL: ${baseUrl}${ep.path}
+  - Status: ${ep.currentStatus}
+  - Auth: ${auth}
+  - Summary: ${ep.summary}`;
+    })
+    .join("\n");
+
+  const guide = `# MockLab Project Guide: ${config.project.name}
+
+Purpose: give an LLM enough project-specific context to call and reason about this mock API.
+
+## Project
+
+- Name: ${config.project.name}
+- Base URL: ${baseUrl}
+- Host: ${config.project.host}
+- Port: ${config.project.port}
+- Running in MockLab: ${
+    runtimeManager.isRunning(config.project.name) ? "yes" : "no"
+  }
+- Endpoint count: ${config.endpoints.length}
+- Updated: ${config.project.updatedAt}
+
+## Runtime Files
+
+These files are local runtime artifacts and are not committed to GitHub:
+
+- endpoints.json: endpoint configuration and aggregate stats
+- state.json: mock database/state used to produce stable responses
+- traffic.har: request/response traffic history in HAR 1.2 format
+
+## How To Use This Mock API
+
+1. Use the Base URL above.
+2. Pick an endpoint from the list below.
+3. Replace path parameters such as {entityName}, {CompanyId}, {RowId}, etc.
+4. Send JSON request bodies for POST/PUT/PATCH operations when required by the imported OpenAPI schema.
+5. Inspect the MockLab dashboard Requests tab for exact request/response examples.
+
+## Endpoints
+
+${endpointLines || "_No endpoints imported._"}
+`;
+
+  return c.text(guide, 200, {
+    "content-type": "text/markdown; charset=utf-8",
+  });
+});
+
 // API routes
 app.route(
   "/api/projects",

@@ -26,7 +26,7 @@ It can:
     PRD.md                        product requirements and scope
     walkthrough.md                architecture walkthrough
   openapi/
-    uniconta.yaml                 sample OpenAPI spec
+    uniconta.json                 official Uniconta Swagger/OpenAPI spec
   packages/
     core/                         shared types, OpenAPI import, config, HAR logging
     runtime/                      built-in Hono mock server
@@ -143,6 +143,7 @@ Dashboard server API:
 - `POST /api/projects/:name/endpoints/:id/reset`
 - `GET /api/projects/:name/endpoints/stats`
 - `GET /llm.md`
+- `GET /projects/:name/llm.md`
 
 ## Common Commands
 

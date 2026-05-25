@@ -71,11 +71,11 @@ Example:
 ```
 /projects
   /crm-api
-    openapi.yaml
+    openapi.yaml|json
     endpoints.json
     faker.ts
   /erp-api
-    openapi.yaml
+    openapi.yaml|json
     endpoints.json
     faker.ts
 ```
